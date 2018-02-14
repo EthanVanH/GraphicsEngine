@@ -8,6 +8,7 @@ ViewSpace::ViewSpace() {
     float theta = 45; //Pretty sure the azimuth here should be 45 as the angle from x to y should be 90
     float r = 10; // these should be input
                     //OR RATHER COULD BE
+    Vertex* k;
     float *viewpoint = new float[3];
     N = new Vertex();
     V = new Vertex();
@@ -26,8 +27,13 @@ ViewSpace::ViewSpace() {
     N->x = 1/N->x;
     N->y = 1/N->y;
     N->z = 1/N->z;
-
-    U = &(N->CrossProduct(V));
+    //TODO
+    k = new Vertex(0,0,1);// this is right. right?
+    V =  new Vertex(*k - *N * (N->DotProduct(k))); //????
+    V = V->normalize();
+    
+    U = new Vertex (N->CrossProduct(V));
+    /*what a clust fuck that was*/
     nearPlane = 2 * viewpoint[2];
     farPlane = 4 * nearPlane;
     h = 1000; // IDK I JUST PICKED AT RANDOM ITS BASICALLY APERATURE RIGHT I CAN DO THAT

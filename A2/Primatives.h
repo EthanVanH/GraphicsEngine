@@ -44,11 +44,11 @@ class Vertex{
         Vertex* normalize();
         float norm();
         float length();
-        Vertex operator*(float &f); // scaler multiplication
-        Vertex operator*(Vertex &v); // vector multiplication
+        Vertex operator*(float f); // scaler multiplication
+        Vertex operator*(Vertex *v); // vector multiplication
         Vertex operator+(Vertex &v);
         Vertex operator-(); //negation
-        Vertex operator-(Vertex &v); // Vector subtraction
+        Vertex operator-(Vertex v); // Vector subtraction
         Vertex operator*=(float &f);
         Vertex operator/=(float &f);
         void Print();

@@ -99,7 +99,7 @@ Vertex Vertex::operator+(Vertex &v){
 }
 
 //Vector subtraction
-Vertex Vertex::operator-(Vertex &v){
+Vertex Vertex::operator-(Vertex v){
     return Vertex(x - v.x, y - v.y, z - v.z);
 }
 
@@ -109,8 +109,8 @@ Vertex Vertex::operator-(){
 }
 
 //the ole dot product
-float Vertex::DotProduct(Vertex &v){
-    return x * v.x + y * v.y + z* v.z; 
+float Vertex::DotProduct(Vertex *v){
+    return x * v->x + y * v->y + z* v->z; 
 }
 
 //the mighty cross product
@@ -120,14 +120,15 @@ Vertex Vertex::CrossProduct(Vertex *v){
                   x * v->y - y * v->x);
 }
 
-//Vector multiplication
-Vertex Vertex::operator*(float &f){
+//Scaler product
+Vertex Vertex::operator*(float f){
     return Vertex(x * f, y * f, z * f);
 }
-//Scaler product
-Vertex Vertex::operator*(Vertex &v){
-    return Vertex(x * v.x, y * v.y, z * v.z);
+//Vector multiplication x = x1 *x2, y = y1 *y2 and so on
+Vertex Vertex::operator*(Vertex *v){
+    return Vertex(x * v->x, y * v->y, z * v->z);
 }
+
 
 //normal and length
 float Vertex::norm(){
