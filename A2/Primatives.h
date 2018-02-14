@@ -35,12 +35,12 @@ class Vertex{
         void SetY(float ycoor);
         void SetZ(float zcoor);
         void SetW(float wval);
-        //Vector Operations --should I make a specific vectr class
+        //Vector Operations --should I make a specific vecer class or use the cpp one...
         Vertex Projection();
         Vertex NDC(float r, float l, float t, float b);
         Vertex Rastor(float w, float h);
-        float DotProduct(Vertex &v);
-        Vertex CrossProduct(Vertex &v);
+        float DotProduct(Vertex *v);
+        Vertex CrossProduct(Vertex *v);
         Vertex* normalize();
         float norm();
         float length();

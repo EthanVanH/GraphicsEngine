@@ -114,10 +114,10 @@ float Vertex::DotProduct(Vertex &v){
 }
 
 //the mighty cross product
-Vertex Vertex::CrossProduct(Vertex &v){
-    return Vertex(y * v.z - z * v.y, 
-                  z * v.x - x * v.z, 
-                  x * v.y - y * v.x);
+Vertex Vertex::CrossProduct(Vertex *v){
+    return Vertex(y * v->z - z * v->y, 
+                  z * v->x - x * v->z, 
+                  x * v->y - y * v->x);
 }
 
 //Vector multiplication
