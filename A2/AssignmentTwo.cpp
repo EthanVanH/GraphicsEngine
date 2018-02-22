@@ -105,21 +105,75 @@ Shape* MakeAShape(int shape, int mesh) {
     }
     return theShape;
 }
-// theShape->GetFaces()->verticies[0].GetMatrix()->Print();
+
+void WorldTransforms(Shape *shape){
+
+}
+
+
+void DrawToImage(Shape *shape){
+    Matrix *imageMatrix;
+    Polygon *polys = shape->GetFaces();
+
+    int* image = new int[500*500*3];
+    float M = 500;
+
+    float xproj[4] = {0.0, -1*(M/2), 0.0, M/2 - 0.5f};
+    float yproj[4] = {M/2, 0.0, 0.0, M/2 - 0.5f};
+    float zproj[4] = {0.0, 0.0, 0.0, 1.0}; //puts z in the range 0 to 1, 0 for neaer plane 1 for far
+
+    imageMatrix = new Matrix(4,3);
+    imageMatrix->MInsertColumn(xproj, 0);
+    imageMatrix->MInsertColumn(yproj, 1);
+    imageMatrix->MInsertColumn(zproj, 2);
+
+    
+
+    for(int i = 0; i < shape->GetNumFaces(); i++){
+        polys[i].Transform(imageMatrix);
+        for(int j = 0; j < polys->vertexCount; j++){
+            if(polys[i].verticies[j].inView != true){
+                break;
+            }
+            int row = int(polys[i].verticies[j].GetX() + 0.5);
+            int col = int(polys[i].verticies[j].GetY() + 0.5);
+            printf("Suspect 1 %d %d\n",row,col); //TODO fix this. 
+            image[row + col] = polys[i].colour[0];
+            image[row + col + 1] = polys[i].colour[1];
+            image[row + col + 2] = polys[i].colour[2];
+
+            printf("image at %d %d is %d\n",row, col, *polys[i].colour);
+        }
+    }
+    //Points now in the form pi = {r,c,0,1}
+    delete[] image;
+}
 
 void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
     bool projFlag;
     int faceCount = shape->GetNumFaces();
     int vpf = shape->GetNumVertPFace();
     Polygon *polys = shape->GetFaces();
-    WorldSpace *w = new WorldSpace();
+    WorldSpace *world = new WorldSpace();
     Matrix *projMatrix;
     
-    float d = viewMatrix->nearPlane;
+    /*Creation of projecton matrix
+     * Of form
+     * d 0 0 0
+     * 0 d 0 0
+     * 0 0 d 0
+     * 0 0 1 0
+     * Where d is the z value representing the near plane of the view volume
+    */
+    WorldTransforms(shape);
 
-    float xproj[4] = {d, 0.0, 0.0, 0.0};
-    float yproj[4] = {0.0, d, 0.0, 0.0};
-    float zproj[4] = {0.0, 0.0, d, 0.0};
+    float d = viewMatrix->d; // just shorthanding these so i dont need to deal with it
+    float f = viewMatrix->f;
+    float h = viewMatrix->h;
+
+    float xproj[4] = {d/h, 0.0, 0.0, 0.0};
+    float yproj[4] = {0.0, d/h, 0.0, 0.0};
+    float zproj[4] = {0.0, 0.0, f/(f-d), -1*(f*d/f-d)}; //puts z in the range 0 to 1, 0 for neaer plane 1 for far
     float wproj[4] = {0.0, 0.0, 1.0, 0.0};
 
     projMatrix = new Matrix(4,4);
@@ -133,12 +187,12 @@ void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
 
     for(int i = 0; i < faceCount; i++ ){
         //transform
-        polys[i].Transform(w->Space);
+        polys[i].Transform(world->Space);
         polys[i].Transform(viewMatrix->Space);
         projFlag = true;
         for(int j = 0; j < vpf; j++){
             if(viewMatrix->isInViewVolume(polys[i].verticies[j].GetMatrix()) != true){
-               projFlag = false;  
+               projFlag = false;  //AGH, NOTHING IS IN VIEW VOLUME AGAIN. FUCK. TODO
             }
         }
         if(projFlag){//project as all verticies are in the view volume
@@ -150,6 +204,8 @@ void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
                     float z = polys[i].verticies[j].GetZ();
                     float w = polys[i].verticies[j].GetW();
 
+                    polys[i].verticies[j].SetInView();
+
                     polys[i].verticies[j].SetX(x/w);
                     polys[i].verticies[j].SetY(y/w);
                     polys[i].verticies[j].SetZ(z/w);
@@ -158,6 +214,7 @@ void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
                  }
              }
         }
+        DrawToImage(shape);
     }
 
     for(int i = 0; i < faceCount; i++){

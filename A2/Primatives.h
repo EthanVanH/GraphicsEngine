@@ -18,6 +18,7 @@ class Vertex2d;
 
 class Vertex{
     public:
+        bool inView = false;
         float x;
         float y;
         float z;
@@ -35,6 +36,7 @@ class Vertex{
         void SetY(float ycoor);
         void SetZ(float zcoor);
         void SetW(float wval);
+        void SetInView();
         //Vector Operations --should I make a specific vecer class or use the cpp one...
         Vertex Projection();
         Vertex NDC(float r, float l, float t, float b);

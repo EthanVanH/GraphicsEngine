@@ -8,4 +8,7 @@
 #define DEFAULT_Y 480
 #define DEFAULT_Z 100
 
+#define DEFAULT_RES 500
+int image[DEFAULT_RES][DEFAULT_RES];
+
 #endif

@@ -8,6 +8,7 @@ Vertex::Vertex(float xcoor, float ycoor, float zcoor){
     y = ycoor;
     z = zcoor;
     w = 1;
+    inView = false;
 }
 
 float Vertex::GetX(){
@@ -56,6 +57,10 @@ void Vertex::SetZ(float zcoor){
 
 void Vertex::SetW(float wval){
     w = wval;
+}
+
+void Vertex::SetInView(){
+    inView = true;
 }
 
 void Vertex::SetMatrix(Matrix *m){
