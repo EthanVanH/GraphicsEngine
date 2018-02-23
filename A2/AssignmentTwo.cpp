@@ -261,7 +261,7 @@ void DrawToImage(Shape **shape, int shapeCount){
                 int col = int(polys[i].verticies[j].GetY()*1000 + 0.5);
                 poly[j][0] = row + (s + 1)*100; //moving these points here... I shouldnt but it was tiny 
                 poly[j][1] = col + (s + 1)*100;
-                cout << row << " " << col << '\n';
+                // cout << row << " " << col << '\n';
                 image->img[(s + 1)*100 + row][(s + 1)*100 + col][0] = polys[i].colour[0];
                 image->img[(s + 1)*100 + row][(s + 1)*100 + col][1] = polys[i].colour[1];
                 image->img[(s + 1)*100 + row][(s + 1)*100 + col][2] = polys[i].colour[2];
@@ -302,7 +302,7 @@ void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
         whichShape++;
     }
     else{
-        world = new WorldSpace(50, 50, 0);
+        world = new WorldSpace(50, 3);//rotate on z axis
         whichShape++;
     }
     /*Creation of projecton matrix
@@ -385,7 +385,6 @@ int main(){
     //Place shape in world space,, maybe move it around a smidge
     ModelViewProjection(viewSpace, theShape[0]);
     ModelViewProjection(viewSpace, theShape[1]);
-    cout << "Modeled Cylinder\n";
     ModelViewProjection(viewSpace, theShape[2]);
     cout << "Shapes done modeling\n";
     theShape[0]->Print();
@@ -397,8 +396,6 @@ int main(){
 
     DrawToImage(theShape, 3);
     //[View To Projection]x[World To View]x[Model to World]=[ModelViewProjectionMatrix].
-    cout << "Cube verticies after being projected to the Image plane\n";
-    theShape[0]->Print();
 
     return 0;    
 }

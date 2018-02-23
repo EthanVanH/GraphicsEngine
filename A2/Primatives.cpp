@@ -255,11 +255,9 @@ void Polygon::Scale(float factor){
 
 
 void Polygon::Transform(Matrix* w){
-    cout << "2 "<< vertexCount << "\n ";
     for(int i = 0; i < vertexCount; i++){
         Vertex v = verticies[i];
         Matrix *m = v.GetMatrix();
         verticies[i].SetMatrix(w->MMultiply(m));
     }
-    cout << "Completed transform\n";
 }

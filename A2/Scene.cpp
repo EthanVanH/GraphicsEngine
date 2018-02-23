@@ -174,3 +174,30 @@ WorldSpace::WorldSpace(float tx, float ty, float tz) {
     //
 
 }
+
+WorldSpace::WorldSpace(float a, int axis){
+    if(axis){
+
+    }
+    // if(axis == 3){ // z axis only for demo //also translates because this needs to be rewritten
+        float xidentity[4] = {cos(a),-1*sin(a), 0.0, 50};
+        float yidentity[4] = {sin(a), cos(a), 0.0, 50};
+        float zidentity[4] = {0.0, 0.0, 1.0, 50.0 };
+        float widentity[4] = {0,0,0,1};
+    // }
+    // else{
+    //     float xidentity[4] = {1,0.0, 0.0, 0};
+    //     float yidentity[4] = {0.0, cos(a), -1*sin(a), 0};
+    //     float zidentity[4] = {0.0, sin(a), cos(a), 0};
+    //     float widentity[4] = {0,0,0,1};
+    // }
+
+    Space->MInsertColumn(xidentity, 0);
+    Space->MInsertColumn(yidentity, 1);
+    Space->MInsertColumn(zidentity, 2);
+    Space->MInsertColumn(widentity, 3);
+
+    //Demonstraton purposes only
+    cout << "The World transformation matrix is\n";
+    Space->Print();
+}

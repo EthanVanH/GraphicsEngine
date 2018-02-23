@@ -50,10 +50,11 @@ class Cube: public Shape {
 };
 
 class Cylinder: public Shape{
-    int faces = 3;
+    int surfaces = 3;
+    int faces; // count of polygons
     int h = 10; // height of cylinder default
     int r = 4; // radius of cylinder default
-    Polygon* cylinderFaces; //top, bot, the wrapping
+    Polygon* cylinderFaces; //top, bot, the wrapping each divided by resolution
 
     int meshType;
     int resolution; // n 

@@ -14,9 +14,9 @@ void Cylinder::GenerateVerts(){
     int y;
     int z;
     cylinderFaces = new Polygon[faces* resolution];
-    for(int i = 0; i < faces * resolution; i++){
+    for(int i = 0; i < surfaces; i++){
         Polygon poly;
-
+        
         poly.verticies = new Vertex[3];
         poly.vertexCount = 0;
         for(int j = 0; j <= n; j++){
@@ -42,7 +42,7 @@ void Cylinder::GenerateVerts(){
 Cylinder::Cylinder(int mesh, int n){
     meshType = mesh;
     resolution = n;
-    faces =  3;
+    faces =  3 * resolution;
     if(n == 0){
         meshType = TRIANGLE;
         resolution = 10;
@@ -52,6 +52,8 @@ Cylinder::Cylinder(int mesh, int n){
         GenerateVerts();
     }
     if(meshType == POLYGON){
+        resolution = 1;
+        GenerateVerts();
         cout << "polygon cylinder not implemented";
     }
 }
