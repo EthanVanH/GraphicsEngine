@@ -63,13 +63,13 @@ void Vertex::SetInView(){
     inView = true;
 }
 
-void Vertex::SetMatrix(Matrix *m){
+void Vertex::SetMatrix(Matrix m){
     // cout << "Final rows" << m->rows<< '\n';
 
-    x = m->m[0][0];
-    y = m->m[0][1];
-    z = m->m[0][2];
-    w = m->m[0][3];
+    x = m.m[0][0];
+    y = m.m[0][1];
+    z = m.m[0][2];
+    w = m.m[0][3];
 }
 
 //Vector Math operations be here
@@ -252,12 +252,14 @@ void Polygon::Scale(float factor){
     }
 }
 
-void Polygon::Transform(Matrix* w){
-    
-    for(int i = 0; i < vertexCount; i++){
-        Vertex *v = &verticies[i];
-        Matrix *m = v->GetMatrix();
-        v->SetMatrix(w->MMultiply(m));
 
+
+void Polygon::Transform(Matrix* w){
+    cout << "2 "<< vertexCount << "\n ";
+    for(int i = 0; i < vertexCount; i++){
+        Vertex v = verticies[i];
+        Matrix *m = v.GetMatrix();
+        verticies[i].SetMatrix(w->MMultiply(m));
     }
+    cout << "Completed transform\n";
 }

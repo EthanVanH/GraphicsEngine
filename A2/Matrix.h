@@ -18,7 +18,7 @@ class Matrix {
         float **m;
         Matrix(int r, int c);
         void MInsertColumn(float *col, int index);
-        Matrix* MMultiply(Matrix* m2);
+        Matrix MMultiply(Matrix* m2);
         Matrix* MAdd(Matrix* m2);
         void Print();
 };

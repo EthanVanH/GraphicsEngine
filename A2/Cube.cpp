@@ -48,7 +48,7 @@ Polygon Cube::PolygonFace(int selector){
         }
     }
     poly.vertexCount = vcount;
-    poly.verticies = vertices;
+    poly.verticies = vertices; 
     return poly;
 }
 

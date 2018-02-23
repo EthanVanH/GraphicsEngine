@@ -32,17 +32,23 @@ Matrix* Matrix::MAdd(Matrix* m2){
     return sum;
 }
 
-//makes terrible assumption that the matricies are the same size
-Matrix* Matrix::MMultiply(Matrix *m2){ // NOTE THAT MATRIX IS THE FORM x[COL][ROW] as i am dumb
-    Matrix *Product = new Matrix(rows, m2->columns);
+
+Matrix Matrix::MMultiply(Matrix *m2){ // NOTE THAT MATRIX IS THE FORM x[COL][ROW] as i am dumb
+    Matrix Product = Matrix(rows, m2->columns);
+    //  Print();
+    //  cout << "^ Multiplying by below\n";
+    //  m2->Print();
     for(int i = 0; i < rows; ++i){
 	    for(int j = 0; j < m2->columns; ++j){
 	        for(int k = 0; k < columns; ++k){
-
-                Product->m[j][i] += m[i][k] * m2->m[j][k];
+                
+                Product.m[j][i] += m[i][k] * m2->m[j][k];
 	        }
 	    }
     }
+    //  cout << "Resulting in ..\n";
+    //  Product.Print();
+    //  cout << "----------\n";
     return Product;
 }
 

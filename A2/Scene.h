@@ -27,6 +27,7 @@ class ViewSpace {
 class WorldSpace {
 public:
         WorldSpace();
+        WorldSpace(float tx, float ty, float tz);
         Matrix *Space = new Matrix(4,4);
 };
 

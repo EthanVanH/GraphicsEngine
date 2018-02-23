@@ -31,7 +31,7 @@ class Vertex{
         float GetZ();
         float GetW();
         Matrix* GetMatrix();
-        void SetMatrix(Matrix *m);
+        void SetMatrix(Matrix m);
         void SetX(float xcoor);
         void SetY(float ycoor);
         void SetZ(float zcoor);

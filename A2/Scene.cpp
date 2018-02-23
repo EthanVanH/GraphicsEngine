@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Image.h"
 
 void ViewSpace::SetupViewSpace(float psi, float theta, float r){
     Vertex* k;
@@ -7,7 +8,7 @@ void ViewSpace::SetupViewSpace(float psi, float theta, float r){
     V = new Vertex();
     U = new Vertex();
 
-    ViewDirection = -1; // llooking into the screen
+    ViewDirection = -1; // looking into the screen
 
     viewpoint[0] = (r * cos(psi) * cos(theta));
     viewpoint[1] = (r * cos(psi) * sin(theta));
@@ -22,18 +23,18 @@ void ViewSpace::SetupViewSpace(float psi, float theta, float r){
     N->z = 1/N->z;
     //TODO
     k = new Vertex(0,0,1);// this is right. right?
-    V =  new Vertex(*k - *N * (N->DotProduct(k))); //????
+    V =  new Vertex(*k - *N * (N->DotProduct(k))); 
     V = V->normalize();
     
     U = new Vertex (N->CrossProduct(V));
     
-    nearPlane =  *N * 1.0f;
-    farPlane = *N * 8.0f;
+    nearPlane =  *N * 1.5f *ViewDirection;
+    farPlane = *N * 20.0f *ViewDirection;
     d = nearPlane.z;
     f = farPlane.z;
-
-    h = 10; // IDK I JUST PICKED AT RANDOM ITS BASICALLY APERATURE RIGHT I CAN DO THAT
-
+    //h causes segfault if it is too low? wtf
+    h = DEFAULT_RES/2; // chosen for the near plane to be the final image. 
+    
     float xidentity[4] = {d, 0.0, 0.0, 0};
     float yidentity[4] = {0.0, d, 0.0, 0};
     float zidentity[4] = {0.0, 0.0, d, 0};
@@ -87,17 +88,44 @@ bool ViewSpace::isInViewVolume(Matrix *point){
 
     max = (h/d) * (z);
     if(max < 0){
-        max = max*-1;
+        max = max * -1;
     }
     min = max * -1;
     
 
-    cout << min << ' ' << max << "||" << x<< ' ' << y<< ' ' << z<< ' ' << "||" << d<< ' ' << f << '\n';
+    // cout << min << ' ' << max << "\n"; 
+    // cout << x << ' ' << y<< ' ' << z<< ' ' << "\n";
+    // cout << d << ' ' << f << '\n';
     
-    if(x > max || x < min || y > max || y < min || z < d || z > f){
-        cout << "not in vv\n";
+    // if(x > max || x < min){
+    //     cout << "x  is fucked "<< x <<"\n";
+    // }
 
-        return false;
+    // if(y > max || y < min){
+    //     cout << "y  is fucked "<< x <<"\n";;
+    // }
+
+
+    // if(z > f || z > d){
+    //     cout << "d is " << d<<'\n';
+    //     cout << "f is " << f <<'\n';
+    //     cout << z << "z  is fucked \n";
+
+    // }
+
+    if(d < 0.0f && f < 0.0f){
+        if(x > max || x < min || y > max || y < min || z > d || z < f){
+            cout << "not in vv A\n";
+
+            return false;
+        }
+    }
+    else{
+        if(x > max || x < min || y > max || y < min || z < d || z > f){
+            cout << "not in vv B\n";
+
+            return false;
+        }
     }
     return true;
 }
@@ -108,12 +136,30 @@ bool ViewSpace::isInViewVolume(Matrix *point){
 //
 
 WorldSpace::WorldSpace() {
-    float tx = 3;
-    float ty = 4;
-    float tz = 8;
-    float xidentity[4] = {1.0, 0.0, 0.0, tx};
-    float yidentity[4] = {0.0, 1.0, 0.0, ty};
-    float zidentity[4] = {0.0, 0.0, 1.0, tz};
+    float tx = 75;
+    float ty = 40;
+    float tz = -15;
+    
+    float xidentity[4] = {100.0, 0.0, 0.0, tx};
+    float yidentity[4] = {0.0, 100.0, 0.0, ty};
+    float zidentity[4] = {0.0, 0.0, 100.0, tz};
+    float widentity[4] = {0,0,0,1};
+
+    Space->MInsertColumn(xidentity, 0);
+    Space->MInsertColumn(yidentity, 1);
+    Space->MInsertColumn(zidentity, 2);
+    Space->MInsertColumn(widentity, 3);
+
+    //Demonstraton purposes only
+    cout << "The World transformation matrix is\n";
+    Space->Print();
+
+}
+
+WorldSpace::WorldSpace(float tx, float ty, float tz) {
+    float xidentity[4] = {100.0, 0.0, 0.0, tx};
+    float yidentity[4] = {0.0, 100.0, 0.0, ty};
+    float zidentity[4] = {0.0, 0.0, 100.0, tz};
     float widentity[4] = {0,0,0,1};
 
 
