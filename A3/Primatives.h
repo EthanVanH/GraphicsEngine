@@ -15,6 +15,13 @@
 
 class Vertex2d;
 
+typedef struct {
+    int x;
+    int y;
+    int r;
+    int g;
+    int b;
+}Point;
 
 class Vertex{
     public:
