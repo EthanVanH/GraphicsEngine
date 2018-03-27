@@ -9,7 +9,7 @@ Image::Image(){
     for(int i = 0; i < DEFAULT_RES; i++){
         for(int j = 0; j < DEFAULT_RES; j++){
             for(int k = 0; k < 3; k++){
-                img[i][j][k] = 125;
+                img[i][j][k] = DEFAULT_BACKGROUND;
             }
         }
     }
@@ -20,36 +20,49 @@ void Image::DDA(Point* points, int numpoints){
     Point Two;
     float dx;
     float dy;
-    float step;
-    int nx;
-    int ny;
-
+    float end;
+    float nx;
+    float ny;
+    
+    
     for(int i = 0; i < numpoints; i++){
         One = points[i];
+        
         for(int j = i + 1; j < numpoints; j++){
             Two = points[j];
+            // cout << "Point x:" << One.x << " y:" << One.y << "\n";
+            // cout << "To \n";
+            // cout << "Point x:" << Two.x << " y:" << Two.y << "\n";
             dx = abs(Two.x - One.x);
             dy = abs(Two.y - One.y);
 
             if(dx >= dy){
-                step = dx;
+                end = dx;
             }else{
-                step = dy;
+                end = dy;
             }
+            
+            dx = dx/end;
+            dy = dy/end;
+            
+            nx = min(One.x, Two.x);
+            ny = min(One.y, Two.y);
+            
+            // cout << "End is " << end << "\n";
+            // cout << "dx" << dx << "\n";
+            // cout << "dy" << dy << "\n";
+            // cout << "nx" << nx << "\n";
+            // cout << "ny" << ny << "\n";
 
-            dx = dx/step;
-            dy = dy/step;
-        
-            nx = One.x;
-            ny = One.y;
+            for(int k = 0; k < end; k++){
+                int x = round(nx);
+                int y = round(ny);
+                img[x][y][0] = One.r;
+                img[x][y][1] = One.g;
+                img[x][y][2] = One.b;
 
-            for(int k = 0; k < step; k ++){
-                img[nx][ny][0] = One.r;
-                img[nx][ny][1] = One.g;
-                img[nx][ny][2] = One.b;
-
-                nx += round(dx);
-                ny += round(dy);
+                nx += dx;
+                ny += dy;
             }
         }
     }

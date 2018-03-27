@@ -25,10 +25,10 @@ class ViewSpace {
 };
 
 class WorldSpace {
-public:
+    public:
         WorldSpace();
         WorldSpace(float tx, float ty, float tz);//translation
-        WorldSpace(float a, int axis); //rotation
+        WorldSpace(float a, char axis); //rotation
         Matrix *Space = new Matrix(4,4);
 };
 

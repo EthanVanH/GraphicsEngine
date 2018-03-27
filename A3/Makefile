@@ -5,7 +5,7 @@ SOURCEFILES = AssignmentThree.cpp Cylinder.cpp Cube.cpp Primatives.cpp Matrix.cp
 all: Graphics
 
 Graphics: Shapes
-	g++ $(FLAGS) $(SOURCEFILES) -o Graphics $(LIBS)
+	g++ $(FLAGS) $(SOURCEFILES) -o Graphics 
 
 Shapes:
 

@@ -91,6 +91,7 @@ class Polygon {
     public:
         int colour[3];
         int vertexCount;
+        int vertexInVV;
         Vertex* verticies;
         Vertex2d* vertices2d;
         Vertex* normal;

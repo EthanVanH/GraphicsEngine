@@ -22,6 +22,7 @@ using namespace std;
 #include "Matrix.h"
 #include "Scene.h"
 
+#define DEMO    
 
 bool isShape(int posibleShape){
     if(posibleShape <0 || posibleShape > 6){
@@ -230,6 +231,27 @@ void DrawToImage(Shape **shape, int shapeCount){
     cout << "The screen to image transformation matrix is \n";
     imageMatrix->Print();
 
+    // Point p1;
+    // p1.x =100;
+    // p1.y = 50;
+    // p1.r = 0;
+    // p1.g = 0;
+    // p1.b = 0;
+
+    // Point p2;
+    // p2.x = 200;
+    // p2.y = 20;
+    // p2.r = 0;
+    // p2.g = 0;
+    // p2.b = 0;
+    
+
+    // Point *test;
+    // test = new Point[2];
+    // test[0] = p1;
+    // test[1] = p2;
+    // image->DDA(test, 2);
+
     for(int s = 0; s < shapeCount; s++){
         Polygon *polys = shape[s]->GetFaces();
 
@@ -240,24 +262,17 @@ void DrawToImage(Shape **shape, int shapeCount){
             poly[i] = new int[2];
         }
 
-        
-
         for(int i = 0; i < shape[s]->GetNumFaces(); i++){
             polys[i].Transform(imageMatrix);
             Point* points = new Point[polys[i].vertexCount];
             for(int j = 0; j < polys[i].vertexCount; j++){
                 if(polys[i].verticies[j].inView != true){
+                    cout << "This point is not in vv?\n";
+                    cout << polys[i].verticies[j].GetX() << "  ";
+                    cout << polys[i].verticies[j].GetY() << "  ";
+                    cout << polys[i].verticies[j].GetZ() << "  ";
+                    cout << polys[i].verticies[j].GetW() << "\n";
                     break;
-                }
-                if(polys[i].verticies[j].GetW() != 0){
-                    // float x = polys[i].verticies[j].GetX();
-                    // float y = polys[i].verticies[j].GetY();
-                    // float w = polys[i].verticies[j].GetW();
-                    // /*Theres an issue at the axis here I need to check if any of the above are 0*/
-                    // /*If they ARE zero i need to set the result as zero instead of inf or +inf */
-                    // polys[i].verticies[j].SetX(x*w);
-                    // polys[i].verticies[j].SetY(y*w);
-                    // polys[i].verticies[j].SetW(w*w);
                 }
 
                 int row = int(polys[i].verticies[j].GetX()*1000 + 0.5); 
@@ -266,6 +281,7 @@ void DrawToImage(Shape **shape, int shapeCount){
                 
                 p.x = (s + 1)*100 + row; //s+1 *100 is a special case for the three object scene
                 p.y = (s + 1)*100 + col;
+
                 p.r = polys[i].colour[0];
                 p.g = polys[i].colour[1];
                 p.b = polys[i].colour[2];
@@ -279,7 +295,7 @@ void DrawToImage(Shape **shape, int shapeCount){
                 image->img[(s + 1)*100 + row][(s + 1)*100 + col][2] = polys[i].colour[2];
                 //Points now in the form pi = {r,c,0,1}
                 //ok so now every point on the same face needs lines drawn between them.
-            }
+            }     
             image->DDA(points, polys[i].vertexCount);
         }
     }
@@ -290,15 +306,14 @@ void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
     static int whichShape = 0;
     bool projFlag;
     int faceCount = shape->GetNumFaces();
-    int vpf = shape->GetNumVertPFace();
+    int vpf;
     Polygon *polys = shape->GetFaces();
     WorldSpace *world;
     
     Matrix *projMatrix;
-    cout << "1\n";
     /*Generates three different world space transformations so shapes will not occupy the same space*/
     if(whichShape == 0){
-        world = new WorldSpace(100, 0, 0);
+        world = new WorldSpace();
         whichShape++;
     }else if(whichShape == 1){
         world = new WorldSpace(0, 100, 0);
@@ -339,6 +354,10 @@ void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
         polys[i].Transform(world->Space);
         polys[i].Transform(viewMatrix->Space);
         projFlag = true;
+        vpf = polys[i].vertexCount;
+        if(polys[i].vertexCount != polys[i].vertexInVV){
+            polys[i].vertexInVV = polys[i].vertexCount;
+        }
         for(int j = 0; j < vpf; j++){
             if(polys[i].verticies[j].GetW() != 1){
                 float x = polys[i].verticies[j].GetX();
@@ -353,11 +372,12 @@ void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
                 polys[i].verticies[j].SetZ(z/w);
                 polys[i].verticies[j].SetW(w/w);
             }
+            
         }
 
         for(int j = 0; j < vpf; j++){
             if(viewMatrix->isInViewVolume(polys[i].verticies[j].GetMatrix()) != true){
-               projFlag = false;  //AGH, NOTHING IS IN VIEW VOLUME AGAIN.TODO
+               projFlag = false;
             }
         }
         if(projFlag){//project as all verticies are in the view volume
