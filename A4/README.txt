@@ -1,6 +1,6 @@
 A Simple graphics engine program
 *******************************************************************
-CIS*4800 Assignment 3
+CIS*4800 Assignment 4
 Author: Ethan Van Houtven
 studentNo: 0851811
 
@@ -13,7 +13,7 @@ studentNo: 0851811
 1.2 Installation
     This program is written in c++
     It is composed of the sourcefiles
-        AssignmentThree.cpp
+        AssignmentFour.cpp
         Cube.cpp
         Primatives.cpp
         Matrix.cpp
@@ -47,14 +47,14 @@ The program will prompt you for further input in specification of what shape you
 2. Results and Product Evaluation
 
 2.1 Results
-    The results of this program are working as intended from my understanding of the requirements. It models a shape and then translates the shape using 
-    a system of linear equations in the form of a matrix. The World matrix is functioning at this point as just a way to expand from a model coordinate system. The view matrix 
-    can be modified to change the view volume easily. The viewport is set as required in project specification, by its spherical coordinates 
+    he viewport is set as required in project specification, by its spherical coordinates 
     C(r*cos(psi)cos(thera), r*cos(psi)*sin(theta), r*sin(psi))
 
 2.2 Product Evaluation
     The program is currently unstable. All variables are controlled. It is currently impossible to currently model shapes other than a cube, and cylinder. Shape modeling is a low priority fix.
     As of the implementation of Brezenhams algorithm, we have lost lines again so images are drawn only with verticies. This will be fixed for the demo.
+    Certain aspects disabled in code in preparation for allowing user input, planned for demo. Culling and clipping work ok. rastorization
+    works except for some edge cases. we have not implemented the removal of extreme values so polygons overlap and look odd.
 *******************************************************************
 3. Technical Discussion
 
@@ -77,9 +77,9 @@ The program will prompt you for further input in specification of what shape you
  The same transformation we would apply to me the camera to where it can watch the origin of the world space. 
  The position of the camera is decided by the sperical coordinates found in the world by the following formula, C(r*cos(psi)cos(thera), r*cos(psi)*sin(theta), r*sin(psi))
     where theta represents half the angle between axis and psi represents teh angle of elevation and r is the radial distance from the origin.
-    The end result of this is a matrix in the form 1 0 0 r*cos(psi)cost(theta)
-                                                   0 1 0 r*cos(psi)sin(theta)
-                                                   0 0 1 r*sin(psi)
+    The end result of this is a matrix in the form  1 0 0 r*cos(psi)cost(theta)
+                                                    0 1 0 r*cos(psi)sin(theta)
+                                                    0 0 1 r*sin(psi)
 
 #creation of world space matrix
     The world space matrix functions as a set of translations away from the origin, which in this case we can assume the shape was modeled at.
@@ -102,7 +102,6 @@ The program will prompt you for further input in specification of what shape you
  a matrix multiplication.
  V` = MV every time.
  
----New this version
 
 #culling
  Culling is the act of removing polygons that are not visible to the viewpoint.
@@ -142,17 +141,47 @@ The program will prompt you for further input in specification of what shape you
 
  This gives us a new point on the polygon. which we will draw to instead of the original.
 
+---New this version
 
 #Rastorizing
 
- - Note this is not yet fully implemented.
- Step 1: rastorize the edges 
+Step 1: rastorize the edges 
     -using DDA or brezenheims algorithm
-        -we switched over and it was a mistake.
-Step 2: Build an array of linked lists 
-    - per row of pixels inside
+Step 2: Build an array of linked lists
+    -Does not need to be linked list in this case as we have only 
+    - Can interpolate the z values of the pixels in between by calculating the difference between points
+        -also normals which will be needed for shading
+    - per row of pixels inside the edges
     - made up fo segments
-Step 3: fill in those pixels with the polygon colour
+Step 3: Remove pixels on the extremes of the polygon
+    - This will prevent overlap with adjacent polygons
+Step 4: fill in those pixels with the polygon colour
 
+#Hidden Surface Removal
+
+First we will need the z value of each point along a polygon.
+we do this through
+    -bilinear interpolation V = [(Vb - Va)/(Xb -Xa)](X - Xa) + Va
+Where the z value vector V, the normal of the point can be calculated via the nomal vector of two points.
+We do this once for each segment of the polygon and get the delta value.
+so we can just add the delta to each vector and z value along the segment.
+N2 = N1+deltaN and so on for each point along the line.
+Z2 = Z1 + deltaZ
+Now we apply the z buffer algorithm for each interpolated z value.
+The z values that are farther away are drawn the others are removed.
+
+for all x,y // for each point in the image
+    zBuffer[x,y] = maxDepth; = 1; // set the max depth to start as 1
+
+for each Polygon P
+    build array of segments //as needed for rastorization we can do both steps in one
+    for y from ymin to ymax // go along the image edge to edge of polygon
+        get Xleft, Xright, Zleft, Zright
+
+        for x from Xleft to Xright //wal along the x axis 
+            get Z //The interpolated z value so once generate the delta value which can be added to the previous z
+            if Z < Zbuffer[x,y]
+                zBuffer[x,y] = z;
+                frameBuffer[x,y] = p.colour
 
 

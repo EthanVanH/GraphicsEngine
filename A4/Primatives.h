@@ -15,6 +15,13 @@
 
 class Vertex2d;
 
+typedef struct {
+    int x;
+    int y;
+    int r;
+    int g;
+    int b;
+}Point;
 
 class Vertex{
     public:
@@ -54,7 +61,6 @@ class Vertex{
         Vertex operator*=(float &f);
         Vertex operator/=(float &f);
         void Print();
-
 };
 
 class Vertex2d{
@@ -84,10 +90,12 @@ class Vertex2d{
 class Polygon {
     public:
         int colour[3];
-        Polygon(){colour[0] = rand()%255 ; colour[1] = rand()%255; colour[2] = rand()%255;};
         int vertexCount;
+        int vertexInVV;
         Vertex* verticies;
         Vertex2d* vertices2d;
+        Vertex* normal;
+        Polygon(){colour[0] = rand()%255 ; colour[1] = rand()%255; colour[2] = rand()%255;};
         void Transform(Matrix* w);
         void Rotate(char axis, float deg);
         void Scale(float factor);

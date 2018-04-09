@@ -21,7 +21,7 @@ void ViewSpace::SetupViewSpace(float psi, float theta, float r){
     N->x = 1/N->x;
     N->y = 1/N->y;
     N->z = 1/N->z;
-    //TODO
+
     k = new Vertex(0,0,1);// this is right. right?
     V =  new Vertex(*k - *N * (N->DotProduct(k))); 
     V = V->normalize();
@@ -45,9 +45,12 @@ void ViewSpace::SetupViewSpace(float psi, float theta, float r){
     Space->MInsertColumn(yidentity, 1);
     Space->MInsertColumn(zidentity, 2);
     Space->MInsertColumn(widentity, 3);
+    
     //Demonstraton purposes only
+    #ifdef DEMO
     cout << "The View transformation matrix is\n";
     Space->Print();
+    #endif
     //
 }
 
@@ -56,7 +59,7 @@ ViewSpace::ViewSpace() {
     //psi as the elevation angle from the plane defined by x and y
     //theta as the angle to halfway between x and y
     float psi = 3.1415/2 - 3.1415/8; // between -pi/2 and pi/2
-    float theta = 45; //Pretty sure the azimuth here should be 45 as the angle from x to y should be 90
+    float theta = 45; //Pretty sure the azimuth here should be 45 as the angle 
     float r = 10; // these should be input
                     //OR RATHER COULD BE
     SetupViewSpace(psi, theta, r);
@@ -91,27 +94,6 @@ bool ViewSpace::isInViewVolume(Matrix *point){
         max = max * -1;
     }
     min = max * -1;
-    
-
-    // cout << min << ' ' << max << "\n"; 
-    // cout << x << ' ' << y<< ' ' << z<< ' ' << "\n";
-    // cout << d << ' ' << f << '\n';
-    
-    // if(x > max || x < min){
-    //     cout << "x  is fucked "<< x <<"\n";
-    // }
-
-    // if(y > max || y < min){
-    //     cout << "y  is fucked "<< x <<"\n";;
-    // }
-
-
-    // if(z > f || z > d){
-    //     cout << "d is " << d<<'\n';
-    //     cout << "f is " << f <<'\n';
-    //     cout << z << "z  is fucked \n";
-
-    // }
 
     if(d < 0.0f && f < 0.0f){
         if(x > max || x < min || y > max || y < min || z > d || z < f){
@@ -157,9 +139,9 @@ WorldSpace::WorldSpace() {
 }
 
 WorldSpace::WorldSpace(float tx, float ty, float tz) {
-    float xidentity[4] = {100.0, 0.0, 0.0, tx};
-    float yidentity[4] = {0.0, 100.0, 0.0, ty};
-    float zidentity[4] = {0.0, 0.0, 100.0, tz};
+    float xidentity[4] = {1.0, 0.0, 0.0, tx};
+    float yidentity[4] = {0.0, 1.0, 0.0, ty};
+    float zidentity[4] = {0.0, 0.0, 1.0, tz};
     float widentity[4] = {0,0,0,1};
 
 
@@ -168,36 +150,56 @@ WorldSpace::WorldSpace(float tx, float ty, float tz) {
     Space->MInsertColumn(zidentity, 2);
     Space->MInsertColumn(widentity, 3);
 
+    #ifdef DEMO
     //Demonstraton purposes only
     cout << "The World transformation matrix is\n";
     Space->Print();
     //
-
+    #endif
 }
 
-WorldSpace::WorldSpace(float a, int axis){
-    if(axis){
-
+WorldSpace::WorldSpace(float a, char axis){
+    
+    float cosa = cos(a);
+    float sina = sin(a);
+    
+    switch(axis){
+        // case 'x':
+        //     float xidentity[4] = {1.0f, 0.0f, 0.0f, 0};
+        //     float yidentity[4] = {0.0f, cosa, -1*sina, 0};
+        //     float zidentity[4] = {0.0f, sina, cosa, 0};
+        //     float widentity[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+        //     Space->MInsertColumn(xidentity, 0);
+        //     Space->MInsertColumn(yidentity, 1);
+        //     Space->MInsertColumn(zidentity, 2);
+        //     Space->MInsertColumn(widentity, 3);
+        // break;
+        // case 'y': //Need to confirm this matrix is correct
+        //     float xidentity[4] = {cosa, 0.0f, -1*sina, 0};
+        //     float yidentity[4] = {0.0f, 1.0f, 0.0f, 0};
+        //     float zidentity[4] = {sina, 0.0f, cosa, 0};
+        //     float widentity[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+        //     Space->MInsertColumn(xidentity, 0);
+        //     Space->MInsertColumn(yidentity, 1);
+        //     Space->MInsertColumn(zidentity, 2);
+        //     Space->MInsertColumn(widentity, 3);
+        // break;
+        default: // Defaults to rotation on z axis
+        case 'z':
+            float xidentity[4] = {cosa, -1*sina, 0.0f, 0};
+            float yidentity[4] = {sina, cosa, 0.0f, 0};
+            float zidentity[4] = {0.0f, 0.0f, 1.0f, 0};
+            float widentity[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+            Space->MInsertColumn(xidentity, 0);
+            Space->MInsertColumn(yidentity, 1);
+            Space->MInsertColumn(zidentity, 2);
+            Space->MInsertColumn(widentity, 3);
+        break;
     }
-    // if(axis == 3){ // z axis only for demo //also translates because this needs to be rewritten
-        float xidentity[4] = {cos(a),-1*sin(a), 0.0, 50};
-        float yidentity[4] = {sin(a), cos(a), 0.0, 50};
-        float zidentity[4] = {0.0, 0.0, 1.0, 50.0 };
-        float widentity[4] = {0,0,0,1};
-    // }
-    // else{
-    //     float xidentity[4] = {1,0.0, 0.0, 0};
-    //     float yidentity[4] = {0.0, cos(a), -1*sin(a), 0};
-    //     float zidentity[4] = {0.0, sin(a), cos(a), 0};
-    //     float widentity[4] = {0,0,0,1};
-    // }
 
-    Space->MInsertColumn(xidentity, 0);
-    Space->MInsertColumn(yidentity, 1);
-    Space->MInsertColumn(zidentity, 2);
-    Space->MInsertColumn(widentity, 3);
-
+    #ifdef DEMO
     //Demonstraton purposes only
     cout << "The World transformation matrix is\n";
     Space->Print();
+    #endif
 }
