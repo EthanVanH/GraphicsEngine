@@ -3,6 +3,7 @@
 #include <math.h>
 #include "Matrix.h"
 #include "Primatives.h"
+#include "ShapeDefinitions.h"
 
 class ViewSpace {
         void SetupViewSpace(float psi, float theta, float r);
@@ -15,13 +16,13 @@ class ViewSpace {
         float f;
         Vertex nearPlane; // d
         Vertex farPlane; // f
-        
+        Vertex *C;
         Vertex *N;
         Vertex *V;
         Vertex *U;
         Matrix *Space = new Matrix(4,4);
         bool isInViewVolume(Matrix *point);
-
+        void Cull(Shape *shape);
 };
 
 class WorldSpace {

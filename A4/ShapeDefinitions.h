@@ -1,5 +1,7 @@
 
 #include "Primatives.h"
+#ifndef SHAPEDEFINITIONS
+#define SHAPEDEFINITIONS
 
 #define RESOLUTION_DEFAULT 5 
 
@@ -77,3 +79,5 @@ class Cylinder: public Shape{
         Polygon* GetFaces();
         void Print();
 };
+
+#endif

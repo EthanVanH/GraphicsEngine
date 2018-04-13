@@ -128,7 +128,7 @@ The program will prompt you for further input in specification of what shape you
  Clipping takes place in the screen space. 
 
  for each point in the screen space, if the point is outside the limits of the viewbox, which were calculated earlier.
- We need to clip if the value of minX > pointX > maxX OR minY > pointY > maxY Or nearPlane > pontZ >farPlane.
+ We need to clip if the value of minX > pointX > maxX OR minY > pointY > maxY Or nearPlane > pointZ >farPlane.
 
  To clip, we need to find the point on the line that interescts the boundry, and draw to that instead of the vertex.
  the point can be determined with the following arithmatic based on the two points we are given
@@ -148,7 +148,7 @@ The program will prompt you for further input in specification of what shape you
 Step 1: rastorize the edges 
     -using DDA or brezenheims algorithm
 Step 2: Build an array of linked lists
-    -Does not need to be linked list in this case as we have only 
+    -Does not need to be linked list in this case as we have only convex polygons
     - Can interpolate the z values of the pixels in between by calculating the difference between points
         -also normals which will be needed for shading
     - per row of pixels inside the edges

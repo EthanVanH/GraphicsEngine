@@ -1,6 +1,6 @@
 FLAGS = -std=c++14 -Wall -Wextra -pedantic
 LIBS = -lglut -lGLEW -lGLU -lGL -lglfw
-SOURCEFILES = AssignmentThree.cpp Cylinder.cpp Cube.cpp Primatives.cpp Matrix.cpp Scene.cpp Image.cpp
+SOURCEFILES = AssignmentFour.cpp Cylinder.cpp Cube.cpp Primatives.cpp Matrix.cpp Scene.cpp Image.cpp
 
 all: Graphics
 

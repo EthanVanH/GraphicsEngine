@@ -252,6 +252,34 @@ void Polygon::Scale(float factor){
     }
 }
 
+void Polygon::CalcNorm(){
+    Vertex *norm = new Vertex;
+    
+    Vertex one = verticies[1] - verticies[0];
+    Vertex two = verticies[2] - verticies[0];
+    #ifdef TESTING
+    cout << "Recalcing norm\n";
+    normal->Print();
+    one.Print();
+    two.Print();
+    #endif
+
+    *norm = one.CrossProduct(&two);
+    norm = norm->normalize();
+    normal = norm;
+
+    #ifdef TESTING
+    normal->Print();
+    #endif
+}
+
+void Polygon::SetCulled(){
+    culled == true ? culled = false: culled = true;
+}
+
+bool Polygon::isCulled(){
+    return culled;
+}
 
 
 void Polygon::Transform(Matrix* w){
@@ -259,6 +287,18 @@ void Polygon::Transform(Matrix* w){
         Vertex v = verticies[i];
         Matrix *m = v.GetMatrix();
         verticies[i].SetMatrix(w->MMultiply(m));
-        //transform doesnt bother the norm unless, UNLESS its a non affine transformation
+    }
+
+    // w->Print();
+    // Matrix* i = w->Invert();
+    // Matrix *m = normal->GetMatrix();
+    // normal->SetMatrix(i->MMultiply(m));
+    //normal->normalize();
+}
+
+void Polygon::Print(){
+    for(int i = 0; i < vertexCount; i++){
+        cout << "  ";
+        verticies[i].Print();
     }
 }

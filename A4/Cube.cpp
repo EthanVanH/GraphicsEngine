@@ -50,11 +50,15 @@ Polygon Cube::PolygonFace(int selector){
             vcount++;      
         }
     }
-    *norm = vertices[0].CrossProduct(&vertices[1]);
+    //making normals
+    Vertex one = vertices[1] - vertices[0];
+    Vertex two = vertices[2] - vertices[0];
+    *norm = one.CrossProduct(&two);
     norm = norm->normalize();
+
     poly.vertexCount = vcount;
     poly.verticies = vertices;
-    poly.normal = norm; 
+    poly.normal = norm;
     return poly;
 }
 
@@ -136,9 +140,8 @@ Polygon* Cube::GetFaces(){
 }
 
 void Cube::Print(){
-    
     for(int i = 0; i < faces; i++){
-        for(int j = 0; j < GetNumVertPFace(); j++){
+        for(int j = 0; j < cubeFaces[i].vertexCount; j++){
             cubeFaces[i].verticies[j].Print();
         }
         cout << "Normal";

@@ -64,7 +64,6 @@ class Vertex{
 };
 
 class Vertex2d{
-
     public:
         float x;
         float y;
@@ -88,17 +87,21 @@ class Vertex2d{
 };
 
 class Polygon {
+        bool culled = false;
     public:
         int colour[3];
         int vertexCount;
         int vertexInVV;
         Vertex* verticies;
-        Vertex2d* vertices2d;
         Vertex* normal;
         Polygon(){colour[0] = rand()%255 ; colour[1] = rand()%255; colour[2] = rand()%255;};
+        void CalcNorm();
+        void SetCulled();
+        bool isCulled();
         void Transform(Matrix* w);
         void Rotate(char axis, float deg);
         void Scale(float factor);
+        void Print();
 };
 
 

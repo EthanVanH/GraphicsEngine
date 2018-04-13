@@ -15,6 +15,12 @@ Matrix::Matrix(int r, int c){
 
 }
 
+Matrix::Matrix(int r, int c, float **array){
+    rows = r;
+    columns = c;
+    m = array;
+}
+
 void Matrix::MInsertColumn(float *col, int index){
     for(int i = 0; i < rows; i++){
         m[index][i] = col[i];
@@ -30,6 +36,33 @@ Matrix* Matrix::MAdd(Matrix* m2){
     }
 
     return sum;
+}
+
+Matrix* Matrix::Invert(){
+    float **invertedM;
+
+    invertedM = new float*[rows];
+    for(int i = 0; i < rows; i++){
+        invertedM[i] = new float[columns];
+    }
+
+    float determinant = 0.0;
+
+    for(int i = 0; i < columns; i++){
+        cout << "asd ";
+        determinant +=  (m[0][i] * (m[1][(i+1)%3] * m[2][(i+2)%3] - m[1][(i+2)%3] * m[2][(i+1)%3]));
+    }
+
+    cout << "Determinant " << determinant << "\n";
+    for(int i = 0; i < rows; i++){
+        for(int j = 0; j < columns; j++){
+            invertedM[i][j] = ((m[(j+1)%3][(i+1)%3] * m[(j+2)%3][(i+2)%3]) - (m[(j+1)%3][(i+2)%3] * m[(j+2)%3][(i+1)%3]))/ determinant; 
+            cout << invertedM[i][j] << "\t";
+        }
+        cout << "\n";
+    }
+    Matrix *Inverted = new Matrix(rows,columns,invertedM);
+    return Inverted;
 }
 
 

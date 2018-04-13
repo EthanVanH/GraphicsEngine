@@ -13,6 +13,8 @@ void ViewSpace::SetupViewSpace(float psi, float theta, float r){
     viewpoint[0] = (r * cos(psi) * cos(theta));
     viewpoint[1] = (r * cos(psi) * sin(theta));
     viewpoint[2] = (r * sin(psi));
+    
+    C = new Vertex(*viewpoint);
 
     N->x = 0 - viewpoint[0];
     N->z = 0 - viewpoint[1];
@@ -28,7 +30,7 @@ void ViewSpace::SetupViewSpace(float psi, float theta, float r){
     
     U = new Vertex (N->CrossProduct(V));
     
-    nearPlane =  *N * 1.5f *ViewDirection;
+    nearPlane =  *N *ViewDirection;
     farPlane = *N * 20.0f *ViewDirection;
     d = nearPlane.z;
     f = farPlane.z;
@@ -97,20 +99,33 @@ bool ViewSpace::isInViewVolume(Matrix *point){
 
     if(d < 0.0f && f < 0.0f){
         if(x > max || x < min || y > max || y < min || z > d || z < f){
-            cout << "not in vv A\n";
+            // cout << "not in vv A\n";
 
             return false;
         }
     }
     else{
         if(x > max || x < min || y > max || y < min || z < d || z > f){
-            cout << "not in vv B\n";
+            // cout << "not in vv B\n";
 
             return false;
         }
     }
     return true;
 }
+
+void ViewSpace::Cull(Shape* shape){
+
+    Polygon *polys = shape->GetFaces();
+    for(int i = 0; i < shape->GetNumFaces(); i++){
+        Vertex CP = *C - polys[i].verticies[0];
+        polys[i].CalcNorm();
+        if(CP.DotProduct(polys[i].normal) >= 0){
+            polys[i].SetCulled();
+        }
+    }
+}
+
 
 
 //
@@ -132,10 +147,11 @@ WorldSpace::WorldSpace() {
     Space->MInsertColumn(zidentity, 2);
     Space->MInsertColumn(widentity, 3);
 
+    #ifdef DEMO
     //Demonstraton purposes only
     cout << "The World transformation matrix is\n";
     Space->Print();
-
+    #endif
 }
 
 WorldSpace::WorldSpace(float tx, float ty, float tz) {
