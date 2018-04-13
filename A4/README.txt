@@ -162,7 +162,7 @@ Step 4: fill in those pixels with the polygon colour
 First we will need the z value of each point along a polygon.
 we do this through
     -bilinear interpolation V = [(Vb - Va)/(Xb -Xa)](X - Xa) + Va
-Where the z value vector V, the normal of the point can be calculated via the nomal vector of two points.
+Where the z value vector V, the normal of the point can be calculated via the normal vector of two points.
 We do this once for each segment of the polygon and get the delta value.
 so we can just add the delta to each vector and z value along the segment.
 N2 = N1+deltaN and so on for each point along the line.

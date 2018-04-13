@@ -18,6 +18,7 @@ class Vertex2d;
 typedef struct {
     int x;
     int y;
+    float z;
     int r;
     int g;
     int b;

@@ -10,6 +10,7 @@
 #define DEFAULT_BACKGROUND 255
 #define CLIPPING false
 #define CULLING true
+#define RASTORIZE true
 
 #include <vector>
 #include "Primatives.h"
@@ -29,7 +30,7 @@ class Image{
         void DDA(Point* points, int numpoints);
         void Clip(Point* points, int numpoints, ViewSpace *vs);
         void Rastorize(vector<Point> &lines);
-        
+        void ZBuffer(Point a, Point b);
 };
 
 

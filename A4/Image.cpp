@@ -97,9 +97,8 @@ void Image::Clip(Point* points, int numpoints, ViewSpace *vs){
     }
 
     for(int i = 0; i < numpoints; i++){
-        // float pX, pY;
-        // pX = points[i].x;
-        // pY = points[i].y;
+       points[0].x =  vs->d; // this is garbage to make some warning go away
+       //TODO:: delete^
 
         cout << "I need to re think this";
     }
@@ -160,6 +159,7 @@ void Image::DDA(Point* points, int numpoints){
         cout << "nx = " << nx << "\n";
         cout << "ny = " << ny << "\n";
         #endif
+
         for(int k = 0; k < end; k++){
             int x = round(nx);
             int y = round(ny);
@@ -181,11 +181,16 @@ void Image::DDA(Point* points, int numpoints){
         }
     }
 
-    if(numpoints > 2){
-        Rastorize(lines);
+    if(RASTORIZE == true){
+        if(numpoints > 2){
+            Rastorize(lines);
+        }
     }
 }
 
+void Image::ZBuffer(Point segmentBegin, Point segmentEnd){
+    
+}
 
 void Image::Rastorize(vector<Point> & lines){
     //For each point on a line
@@ -196,8 +201,8 @@ void Image::Rastorize(vector<Point> & lines){
     if(lines.empty()){
         return;
     }
-    for(int i = 0; i < lines.size(); i++){
-        for(int j = 0; j < lines.size(); j++){
+    for(int i = 0; (unsigned)i < lines.size(); i++){
+        for(int j = 0; (unsigned)j < lines.size(); j++){
             if(lines[i].x == lines[j].x || lines[i].y == lines[j].y){
                 //colinear x situation
                 Point* points = new Point[2];

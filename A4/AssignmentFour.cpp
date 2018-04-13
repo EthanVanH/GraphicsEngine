@@ -206,6 +206,8 @@ void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
                 p.x = (s + 1)*100 + row; //s+1 *100 is a special case for the three object scene
                 p.y = (s + 1)*100 + col;
 
+                p.z = polys[i].verticies[j].GetZ();
+
                 p.r = polys[i].colour[0];
                 p.g = polys[i].colour[1];
                 p.b = polys[i].colour[2];
