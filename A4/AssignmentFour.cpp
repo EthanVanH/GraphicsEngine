@@ -147,8 +147,8 @@ void OutputImage(Image *m){
 void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
     Matrix *imageMatrix;
     Image *image;
-    int **poly;
     image = new Image();
+    bool skip;
 
     float M = float(DEFAULT_RES);
 
@@ -168,17 +168,15 @@ void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
 
     for(int s = 0; s < shapeCount; s++){
         Polygon *polys = shape[s]->GetFaces();
-
-        int vpf = shape[s]->GetNumVertPFace();
-
-        poly = new int *[vpf];
-        for(int i = 0; i < vpf; i++){
-            poly[i] = new int[2];
-        }
-
+        
         for(int i = 0; i < shape[s]->GetNumFaces(); i++){
+            // cout << "Poly at i\n";
+            // polys[i].Print();
+            skip = false;
             polys[i].Transform(imageMatrix);
             Point* points = new Point[polys[i].vertexCount];
+            // cout << "imageified\n";
+            // polys[i].Print();
             for(int j = 0; j < polys[i].vertexCount; j++){
                 
                 if(polys[i].isCulled()){
@@ -186,6 +184,7 @@ void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
                     cout << "Not Drawing culled polygon " << i <<"\n";
                     polys[i].Print();
                     #endif
+                    skip = true;
                     break;
                 }
                 if(polys[i].verticies[j].inView != true){
@@ -196,11 +195,12 @@ void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
                     cout << polys[i].verticies[j].GetZ() << "  ";
                     cout << polys[i].verticies[j].GetW() << "\n";
                     #endif
+                    skip = true;
                     break;
                 }
                 
-                int row = int(polys[i].verticies[j].GetX()*1000 + 0.5); 
-                int col = int(polys[i].verticies[j].GetY()*1000 + 0.5); 
+                int row = int(polys[i].verticies[j].GetX()*1000); 
+                int col = int(polys[i].verticies[j].GetY()*1000); 
                 Point p;
                 
                 p.x = (s + 1)*100 + row; //s+1 *100 is a special case for the three object scene
@@ -217,9 +217,11 @@ void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
                 image->img[(s + 1)*100 + row][(s + 1)*100 + col][2] = polys[i].colour[2];
                 //Points now in the form pi = {r,c,0,1}
             }
-            //Should draw a line between every rastorized point of a polygon     
-            image->Clip(points,polys[i].vertexCount, vs);
-            image->DDA(points, polys[i].vertexCount);
+            //Should draw a line between every rastorized point of a polygon
+            if(!skip){
+                image->Clip(points, polys[i].vertexCount, vs);
+                image->DDA(points, polys[i].vertexCount);
+            }
         }
     }
     OutputImage(image);

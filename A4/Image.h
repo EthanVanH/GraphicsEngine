@@ -8,9 +8,10 @@
 #define COLOUR_MAX 255
 #define COLOUR_MIN 0
 #define DEFAULT_BACKGROUND 255
-#define CLIPPING true
+#define CLIPPING false
 #define CULLING true
 
+#include <vector>
 #include "Primatives.h"
 #include "Scene.h"
 
@@ -27,6 +28,7 @@ class Image{
         Image();
         void DDA(Point* points, int numpoints);
         void Clip(Point* points, int numpoints, ViewSpace *vs);
+        void Rastorize(vector<Point> &lines);
         
 };
 

@@ -5,6 +5,7 @@
 
 #include "Image.h"
 Point p0;
+
 Image::Image(){
     for(int i = 0; i < DEFAULT_RES; i++){
         for(int j = 0; j < DEFAULT_RES; j++){
@@ -96,13 +97,14 @@ void Image::Clip(Point* points, int numpoints, ViewSpace *vs){
     }
 
     for(int i = 0; i < numpoints; i++){
-        float pX, pY;
-        pX = points[i].x;
-        pY = points[i].y;
+        // float pX, pY;
+        // pX = points[i].x;
+        // pY = points[i].y;
 
-
+        cout << "I need to re think this";
     }
 }
+
 
 void Image::DDA(Point* points, int numpoints){
     Point One;
@@ -113,8 +115,16 @@ void Image::DDA(Point* points, int numpoints){
     float nx;
     float ny;
     
-    Sort(points,numpoints);
+    vector <Point> lines;
      
+    Sort(points,numpoints);
+    #ifdef TESTING
+    cout << "DDA sorted points\n";
+    
+    for(int i = 0; i < numpoints; i++){
+        cout << "Point X: " << points[i].x << " Y: " << points[i].y << "\n";
+    }
+    #endif
     for(int i = 0; i < numpoints; i++){
         One = points[i];
         
@@ -153,6 +163,16 @@ void Image::DDA(Point* points, int numpoints){
         for(int k = 0; k < end; k++){
             int x = round(nx);
             int y = round(ny);
+            Point newP;
+            newP.x = x;
+            newP.y = y;
+
+            newP.r = One.r;        
+            newP.g = One.g;
+            newP.b = One.b;        
+
+            lines.push_back(newP);
+
             img[x][y][0] = One.r;
             img[x][y][1] = One.g;
             img[x][y][2] = One.b;
@@ -160,4 +180,54 @@ void Image::DDA(Point* points, int numpoints){
             ny += dy;
         }
     }
+
+    if(numpoints > 2){
+        Rastorize(lines);
+    }
+}
+
+
+void Image::Rastorize(vector<Point> & lines){
+    //For each point on a line
+    //find the point on another line that is colinear
+    //these are the start and end points
+    //step along the axis they are colinear and fill that in with point colour
+        //oh this step is literally the dda between two points
+    if(lines.empty()){
+        return;
+    }
+    for(int i = 0; i < lines.size(); i++){
+        for(int j = 0; j < lines.size(); j++){
+            if(lines[i].x == lines[j].x || lines[i].y == lines[j].y){
+                //colinear x situation
+                Point* points = new Point[2];
+                points[0] = lines[i];
+                points[1] = lines[j];
+                
+                //Trim extremes
+                if(points[0].x > points[1].x){
+                    points[0].x--;
+                    points[1].x++;
+                }else{
+                    points[1].x--;
+                    points[0].x++;
+                }
+
+                if(points[0].y > points[1].y){
+                    points[0].y--;
+                    points[1].y++;
+                }else{
+                    points[1].y--;
+                    points[0].y++;
+                }
+                //if the trim makes these points the same dont draw lines between them
+                if(points[0].x == points[1].x && points[0].y == points[1].y){
+                    break;
+                }
+                DDA(points, 2);
+            }
+            
+        }
+    }
+    
 }

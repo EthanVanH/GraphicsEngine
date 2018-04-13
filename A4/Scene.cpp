@@ -62,7 +62,7 @@ ViewSpace::ViewSpace() {
     //theta as the angle to halfway between x and y
     float psi = 3.1415/2 - 3.1415/8; // between -pi/2 and pi/2
     float theta = 45; //Pretty sure the azimuth here should be 45 as the angle 
-    float r = 10; // these should be input
+    float r = 5; // these should be input
                     //OR RATHER COULD BE
     SetupViewSpace(psi, theta, r);
     
