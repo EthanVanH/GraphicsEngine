@@ -14,6 +14,11 @@ Image::Image(){
             }
         }
     }
+    for(int i = 0; i < DEFAULT_RES; i++){
+        for(int j = 0; j < DEFAULT_RES; j++){
+            zbuffer[i][j] = 1;
+        }
+    }
 }
 
 void Image::swap(Point p1, Point p2){
@@ -189,7 +194,26 @@ void Image::DDA(Point* points, int numpoints){
 }
 
 void Image::ZBuffer(Point segmentBegin, Point segmentEnd){
-    
+    float zright = max(segmentBegin.z, segmentEnd.z);
+    float zleft = min(segmentBegin.z, segmentEnd.z);
+    int xright = max(segmentBegin.x, segmentEnd.x);
+    int xleft = max(segmentBegin.x, segmentEnd.x);
+    int ymin = min(segmentBegin.y, segmentEnd.y);
+    int ymax = max(segmentBegin.y, segmentEnd.y);
+
+    float z = zleft;
+    float diff = (zright-zleft)/(xleft-xright);
+    for(int y = ymin; y < ymax; y++){
+        for(int x = xleft; x < xright; x++){
+            z+= diff;
+            if(zbuffer[x][y] > z){
+                zbuffer[x][y] = z;
+                img[x][x][0] = segmentBegin.r;
+                img[x][x][1] = segmentBegin.g;
+                img[x][x][2] = segmentBegin.b;
+            }
+        }
+    }
 }
 
 void Image::Rastorize(vector<Point> & lines){
@@ -230,6 +254,7 @@ void Image::Rastorize(vector<Point> & lines){
                     break;
                 }
                 DDA(points, 2);
+                //ZBuffer(points[0], points[1]);
             }
             
         }

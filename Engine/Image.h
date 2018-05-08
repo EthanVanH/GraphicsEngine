@@ -8,10 +8,9 @@
 #define COLOUR_MAX 255
 #define COLOUR_MIN 0
 #define DEFAULT_BACKGROUND 255
-
 #define CLIPPING false
-#define CULLING true
-#define RASTORIZE true
+#define CULLING false
+#define RASTORIZE false
 
 #include <vector>
 #include "Primatives.h"
@@ -25,6 +24,7 @@ class Image{
         static int orientation(Point p, Point q, Point r);
         static int distSq(Point p1, Point p2);
         static void swap(Point p1, Point p2);
+        float zbuffer[DEFAULT_RES][DEFAULT_RES];
     public:
         int img[DEFAULT_RES][DEFAULT_RES][COLOUR_VARIABLES];
         Image();
