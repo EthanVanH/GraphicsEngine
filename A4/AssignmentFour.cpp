@@ -151,15 +151,17 @@ void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
     bool skip;
 
     float M = float(DEFAULT_RES);
+    float h = float(vs->h);
+    float xproj[4] = {0.0, -1*(M/2*h), 0.0, M/2 - 0.5f};
+    float yproj[4] = {M/2*h, 0.0, 0.0, M/2 - 0.5f};
+    float zproj[4] = {0.0, 0.0, 0.0, vs->d};
+    float wproj[4] = {0.0, 0.0, 0.0, 1.0}; 
 
-    float xproj[4] = {0.0, -1*(M/2), 0.0, M/2 - 0.5f};
-    float yproj[4] = {M/2, 0.0, 0.0, M/2 - 0.5f};
-    float zproj[4] = {0.0, 0.0, 0.0, 1.0}; 
-
-    imageMatrix = new Matrix(4,3); //puts z in the range 0 to 1, 0 for near plane 1 for far
+    imageMatrix = new Matrix(4,4); //puts z in the range 0 to 1, 0 for near plane 1 for far
     imageMatrix->MInsertColumn(xproj, 0);
     imageMatrix->MInsertColumn(yproj, 1);
     imageMatrix->MInsertColumn(zproj, 2);
+    imageMatrix->MInsertColumn(wproj, 3);
     
     #ifdef DEMO
     cout << "The screen to image transformation matrix is \n";
@@ -189,7 +191,7 @@ void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
                 }
                 if(polys[i].verticies[j].inView != true){
                     #ifdef DEMO
-                    cout << "Not drawing vertex outside viewVolume";
+                    cout << "Not drawing vertex outside viewVolume\n";
                     cout << polys[i].verticies[j].GetX() << "  ";
                     cout << polys[i].verticies[j].GetY() << "  ";
                     cout << polys[i].verticies[j].GetZ() << "  ";
@@ -198,26 +200,25 @@ void DrawToImage(Shape **shape, int shapeCount, ViewSpace *vs){
                     skip = true;
                     break;
                 }
-                
-                int row = int(polys[i].verticies[j].GetX()*1000); 
-                int col = int(polys[i].verticies[j].GetY()*1000); 
-                Point p;
-                
-                p.x = (s + 1)*100 + row; //s+1 *100 is a special case for the three object scene
-                p.y = (s + 1)*100 + col;
 
+                
+                int row = int(polys[i].verticies[j].GetX()); 
+                int col = int(polys[i].verticies[j].GetY()); 
+                Point p;
+                p.x = ((s + 1) + row)%DEFAULT_RES; //s+1 *100 is a special case for the three object scene
+                p.y = ((s + 1) + col)%DEFAULT_RES;
                 p.z = polys[i].verticies[j].GetZ();
 
                 p.r = polys[i].colour[0];
                 p.g = polys[i].colour[1];
                 p.b = polys[i].colour[2];
-
                 points[j] = p;
-
-                image->img[(s + 1)*100 + row][(s + 1)*100 + col][0] = polys[i].colour[0];
-                image->img[(s + 1)*100 + row][(s + 1)*100 + col][1] = polys[i].colour[1];
-                image->img[(s + 1)*100 + row][(s + 1)*100 + col][2] = polys[i].colour[2];
+                //cout << "I bet i segfault here\n" << (s + 1) + row << "   ---   " << (s + 1) + col << "\n";
+                image->img[((s + 1) + row)%DEFAULT_RES][((s + 1) + col)%DEFAULT_RES][0] = polys[i].colour[0];
+                image->img[((s + 1) + row)%DEFAULT_RES][((s + 1) + col)%DEFAULT_RES][1] = polys[i].colour[1];
+                image->img[((s + 1) + row)%DEFAULT_RES][((s + 1) + col)%DEFAULT_RES][2] = polys[i].colour[2];
                 //Points now in the form pi = {r,c,0,1}
+                //cout << "I was wrong\n";
             }
             //Should draw a line between every rastorized point of a polygon
             if(!skip){
@@ -247,7 +248,7 @@ void ModelViewProjection(ViewSpace *viewMatrix, Shape *shape){
         whichShape++;
     }
     else{
-        world = new WorldSpace(50, 3);//rotate on z axis
+        world = new WorldSpace(50, 3, 10);//rotate on z axis
         whichShape++;
     }
     /*Creation of projecton matrix
@@ -329,8 +330,8 @@ int main(){
     //GetInput(&shape, &mesh);
     //build 3d shape based on input specifications
     theShape[0] = MakeAShape(0, 1); // just gonna make a cube for now no need for input
-    //theShape[1] = MakeAShape(0, 0);
-    //theShape[2] = MakeAShape(0, 0);
+    theShape[1] = MakeAShape(0, 0);
+    theShape[2] = MakeAShape(0, 0);
     
     #ifdef DEMO
     cout << "Cube verticies before being projected to the view plane\n";
@@ -339,23 +340,24 @@ int main(){
     #endif
 
     ModelViewProjection(viewSpace, theShape[0]);
+    ModelViewProjection(viewSpace, theShape[1]);
+    ModelViewProjection(viewSpace, theShape[2]);
     if(CULLING == true){
         viewSpace->Cull(theShape[0]);
+        viewSpace->Cull(theShape[1]);
+        viewSpace->Cull(theShape[2]);
     }
-    //ModelViewProjection(viewSpace, theShape[1]);
-    //ModelViewProjection(viewSpace, theShape[2]);
-    
     #ifdef DEMO
     cout << "Shapes done modeling\n";
     theShape[0]->Print();
     cout << "--------------S1-------------------\n";
-    //theShape[1]->Print();
-    //cout << "--------------S2-------------------\n";
-    //theShape[2]->Print();
-    //cout << "--------------S3-------------------\n";
+    theShape[1]->Print();
+    cout << "--------------S2-------------------\n";
+    theShape[2]->Print();
+    cout << "--------------S3-------------------\n";
     #endif
 
-    DrawToImage(theShape, 1, viewSpace);
+    DrawToImage(theShape, 3, viewSpace);
     //[View To Projection]x[World To View]x[Model to World]=[ModelViewProjectionMatrix].
 
     return 0;    
